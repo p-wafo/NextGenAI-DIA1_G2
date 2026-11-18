@@ -120,7 +120,11 @@ foreach ($i in 1..20) { $c = "C{0:D2}" -f $i; python atelier-vote.py --traces TD
 python vote-quorum.py --traces TD1/traces/traces-td1.csv | Out-File -Encoding utf8 TD2/vote-2of3-vs-3of5.jsonl
 ```
 
-# groupe B
+## Part 2 - The wrong consensus (Pair B)
+
+On C02, GPT-OSS 20B and Dots both returned 0 cents against a reference of 590,320 cents. The fixed 2-of-3 panel returns the reference. The 3-of-5 quorum abstains.
+
+See the [full analysis and SQL queries](wrong-consensus.md), the [reproduction script](pair_b_check.py), and its [recorded output](pair_b_check-output.txt).
 
 
 # TD 2. Routing rule (Pair C)
