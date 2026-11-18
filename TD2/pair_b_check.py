@@ -100,7 +100,8 @@ def main():
     title("3. SQL files of TD2/sql on data/boutique.sqlite (read-only)")
     con = sqlite3.connect(DB.resolve().as_uri() + "?mode=ro", uri=True)
     for name in ["c02-reference.sql", "c02-faulty-gpt-oss-20b.sql", "c02-faulty-dots.sql",
-                 "c02-dots-birth-clause-only.sql", "c02-dots-date-clause-only.sql"]:
+                 "c02-dots-birth-clause-only.sql", "c02-dots-date-clause-only.sql",
+                 "c02-dots-correct-age-order-day.sql"]:
         print(f"{name:34} -> {con.execute((SQL / name).read_text(encoding='utf-8')).fetchone()[0]}")
     for name in ["c02-delta.sql", "c02-delta-total.sql", "c02-population-check.sql"]:
         cursor = con.execute((SQL / name).read_text(encoding="utf-8"))

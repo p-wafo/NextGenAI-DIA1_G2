@@ -80,8 +80,9 @@ The JOINs are correct in both queries; the error is in the `WHERE` clause.
 |---|---:|---|
 | Birth date **equal to** 2001-09-25 (one day instead of a one-year window) | 135 000 | keeps only C001, misses 455 320 |
 | Orders placed **on** 2026-09-25 (instead of all orders) | 0 | no order on that day (last order: 2026-09-20 19:24:25), removes the remaining 135 000 |
+| Correct age window **plus** the order-day filter | 0 | even with the right customers, the order-day filter alone empties the result |
 
-Files: [c02-dots-birth-clause-only.sql](sql/c02-dots-birth-clause-only.sql), [c02-dots-date-clause-only.sql](sql/c02-dots-date-clause-only.sql).
+Files: [c02-dots-birth-clause-only.sql](sql/c02-dots-birth-clause-only.sql), [c02-dots-date-clause-only.sql](sql/c02-dots-date-clause-only.sql), [c02-dots-correct-age-order-day.sql](sql/c02-dots-correct-age-order-day.sql).
 
 Two different mistakes, the same result: each filter selects an empty set, and `COALESCE(SUM(...), 0)` turns the empty set into 0. The models agree on the effect, not on the logic.
 
@@ -89,17 +90,17 @@ Two different mistakes, the same result: each filter selects an empty set, and `
 
 [c02-delta.sql](sql/c02-delta.sql) evaluates, order line by order line, the `WHERE` clause of the reference and of each faulty query, and lists every customer whose revenue differs. It would also show revenue wrongly added by a faulty query. Executed read-only on `data/boutique.sqlite` (sha256 `0077e235...3398fec2`, identical to `manifest.json`):
 
-| customer_id | birth_date | reference | GPT-OSS 20B | Dots3-Note |
-|---|---|---:|---:|---:|
-| C005 | 2000-09-26 | 150 240 | 0 | 0 |
-| C007 | 2000-11-30 | 118 740 | 0 | 0 |
-| C009 | 2001-03-10 | 61 330 | 0 | 0 |
-| C008 | 2001-05-15 | 99 090 | 0 | 0 |
-| C002 | 2001-09-24 | 25 920 | 0 | 0 |
-| C001 | 2001-09-25 | 135 000 | 0 | 0 |
-| **Total** | | **590 320** | **0** | **0** |
+| customer_id | birth_date | order lines | reference | GPT-OSS 20B | Dots3-Note |
+|---|---|---:|---:|---:|---:|
+| C005 | 2000-09-26 | 20 | 150 240 | 0 | 0 |
+| C007 | 2000-11-30 | 18 | 118 740 | 0 | 0 |
+| C009 | 2001-03-10 | 9 | 61 330 | 0 | 0 |
+| C008 | 2001-05-15 | 11 | 99 090 | 0 | 0 |
+| C002 | 2001-09-24 | 6 | 25 920 | 0 | 0 |
+| C001 | 2001-09-25 | 18 | 135 000 | 0 | 0 |
+| **Total** | | **82** | **590 320** | **0** | **0** |
 
-[c02-delta-total.sql](sql/c02-delta-total.sql): **6 customers, 590 320 cents missed by each faulty query, 0 cents wrongly added.** The gap 590 320 − 0 is entirely explained by these six customers. C005 (born 2000-09-26, still 25 on the reference date) and C001 (born 2001-09-25, turns 25 on the reference date) sit exactly on the two bounds of the window.
+[c02-delta-total.sql](sql/c02-delta-total.sql): **6 customers and 82 order lines, 590 320 cents missed by each faulty query, 0 cents wrongly added.** The gap 590 320 − 0 is entirely explained by these six customers. C005 (born 2000-09-26, still 25 on the reference date) and C001 (born 2001-09-25, turns 25 on the reference date) sit exactly on the two bounds of the window.
 
 ## 4. Independent check
 
@@ -138,6 +139,11 @@ Proposals `[0, 0, 100]`, 2 of 3: `vote_k_sur_n` returns a consensus on 0 against
 ## Note for Pair A
 
 `atelier-vote.py` passes each proposal as an object with attributes (`proposal.provider`), not as a dictionary. The first version of `vote_k_sur_n` (commit dd26315) used `proposal["provider"]` and raised `TypeError` on every example. Pair B reported it; Pair A's version of 14:32 (commit 7e57fc0) reads both forms, and all votes above were checked with it.
+
+## Pair B contributions
+
+- **Pierre-Olivier WAFO BAKAM:** search over the 100 cells, quorum verdicts, faulty-clause diagnosis, delta and population-check queries, DEMO-VOTE, `pair_b_check.py`.
+- **Hugo HOUPPE:** an independent version of the same analysis (commit 7d08116), with its own queries and script, which reproduced every figure above (0, 590 320, 6 customers, 135 000). Merged here: the order-line count per customer, the "correct age, order-day filter" check on the Dots query, and the summary of this case in the TD 2 report.
 
 ## Limits and disclosure
 

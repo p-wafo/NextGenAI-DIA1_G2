@@ -120,7 +120,15 @@ foreach ($i in 1..20) { $c = "C{0:D2}" -f $i; python atelier-vote.py --traces TD
 python vote-quorum.py --traces TD1/traces/traces-td1.csv | Out-File -Encoding utf8 TD2/vote-2of3-vs-3of5.jsonl
 ```
 
-# groupe B
+## Part 2 – Shared wrong value on C02 (Pair B)
+
+GPT-OSS 20B and Dots both returned **0 cents** on C02, against a reference of **590,320 cents**: the only shared wrong value in our 100 TD 1 cells. The fixed 2-of-3 panel elects the reference, because 20B and Dots are not members; the 3-of-5 quorum abstains, because 0 and 590,320 tie at two votes.
+
+The first SQL query keeps the reference date without subtracting 25 years and selects customers aged 0. The second selects a single birthday and adds an order-date filter that the question does not require, on a day with no order. Both select an empty set, and `COALESCE` turns it into 0. The delta query on the official SQLite database identifies **six customers and 82 order lines** that account for all 590,320 missing cents, and an independent calculation on the course CSVs matches it.
+
+**Check that detects it:** count the population selected by the filter. A zero amount with a non-empty reference population is escalated to the reference computation; true zeros (C06, C14) pass. Agreement on 0 deserves less trust than agreement on another amount.
+
+[Full diagnosis, queries and reproduction](wrong-consensus.md) · `python TD2/pair_b_check.py` ([output](pair_b_check-output.txt))
 
 
 # TD 2. Routing rule (Pair C)

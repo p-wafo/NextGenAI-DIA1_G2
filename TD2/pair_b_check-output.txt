@@ -23,15 +23,16 @@ c02-faulty-gpt-oss-20b.sql         -> 0
 c02-faulty-dots.sql                -> 0
 c02-dots-birth-clause-only.sql     -> 135000
 c02-dots-date-clause-only.sql      -> 0
-c02-delta.sql: customer_id | birth_date | reference_cents | gpt_oss_20b_cents | dots_cents
-   C005 | 2000-09-26 | 150240 | 0 | 0
-   C007 | 2000-11-30 | 118740 | 0 | 0
-   C009 | 2001-03-10 | 61330 | 0 | 0
-   C008 | 2001-05-15 | 99090 | 0 | 0
-   C002 | 2001-09-24 | 25920 | 0 | 0
-   C001 | 2001-09-25 | 135000 | 0 | 0
-c02-delta-total.sql: customers | reference_cents | gpt_oss_20b_cents | dots_cents | gap_gpt_oss_20b | gap_dots
-   6 | 590320 | 0 | 0 | 590320 | 590320
+c02-dots-correct-age-order-day.sql -> 0
+c02-delta.sql: customer_id | birth_date | reference_order_lines | reference_cents | gpt_oss_20b_cents | dots_cents
+   C005 | 2000-09-26 | 20 | 150240 | 0 | 0
+   C007 | 2000-11-30 | 18 | 118740 | 0 | 0
+   C009 | 2001-03-10 | 9 | 61330 | 0 | 0
+   C008 | 2001-05-15 | 11 | 99090 | 0 | 0
+   C002 | 2001-09-24 | 6 | 25920 | 0 | 0
+   C001 | 2001-09-25 | 18 | 135000 | 0 | 0
+c02-delta-total.sql: customers | reference_order_lines | reference_cents | gpt_oss_20b_cents | dots_cents | gap_gpt_oss_20b | gap_dots
+   6 | 82 | 590320 | 0 | 0 | 590320 | 590320
 c02-population-check.sql: filter | customers | order_lines
    C02 reference | 6 | 82
    C02 GPT-OSS 20B | 0 | 0

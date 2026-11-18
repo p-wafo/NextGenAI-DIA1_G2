@@ -6,6 +6,9 @@
 SELECT
     c.customer_id,
     c.birth_date,
+    -- Order lines selected by the reference filter
+    SUM(CASE WHEN c.birth_date > '2000-09-25' AND c.birth_date <= '2001-09-25'
+             THEN 1 ELSE 0 END) AS reference_order_lines,
     -- Reference (reference-td1.csv): exactly 25 years old on 2026-09-25
     SUM(CASE WHEN c.birth_date > '2000-09-25' AND c.birth_date <= '2001-09-25'
              THEN o.quantity_product * p.price ELSE 0 END) AS reference_cents,
