@@ -120,7 +120,13 @@ foreach ($i in 1..20) { $c = "C{0:D2}" -f $i; python atelier-vote.py --traces TD
 python vote-quorum.py --traces TD1/traces/traces-td1.csv | Out-File -Encoding utf8 TD2/vote-2of3-vs-3of5.jsonl
 ```
 
-# groupe B
+## Part 2 – Shared wrong value on C02 (Pair B)
+
+GPT-OSS 20B and Dots both returned **0 cents** on C02, against a reference of **590,320 cents**. The fixed 2-of-3 panel elects the reference, while the 3-of-5 quorum abstains.
+
+The first SQL query filters on the wrong birth years. The second selects a single birthday and adds an order-date filter that the question does not require. The delta query on the official SQLite database identifies **six customers and 82 order lines** that account for all 590,320 missing cents. An independent calculation on the course CSVs matches the result.
+
+[Full diagnosis, queries and reproduction commands](TD2_groupB.md) · [Executed SQL and CSV checks](c02-evidence.json)
 
 
 # TD 2. Routing rule (Pair C)
