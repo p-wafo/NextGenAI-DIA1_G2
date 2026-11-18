@@ -624,8 +624,14 @@ class Orchestrateur:
         families, and look in your traces for a case where several models agree
         on a wrong value.
         """
-
         n = len(traces_question)
+
+        # atelier-vote.py passe des objets à attributs (SimpleNamespace), d'autres
+        # appels peuvent passer des dict : on lit les champs dans les deux cas.
+        def field(proposal, name):
+            if isinstance(proposal, dict):
+                return proposal.get(name)
+            return getattr(proposal, name, None)
 
         # Règle 2 : k strictement majoritaire, fixé AVANT de regarder les réponses.
         # Garantit que deux valeurs différentes ne peuvent pas atteindre k en même temps.
@@ -635,7 +641,7 @@ class Orchestrateur:
         # Règle 3 : un modèle = une voix. Un doublon (même provider + même modèle) est refusé.
         seen = set()
         for proposal in traces_question:
-            member = (proposal["provider"], proposal["model_requested"])
+            member = (field(proposal, "provider"), field(proposal, "model_requested"))
             if member in seen:
                 raise ValueError(f"duplicate panel member: {member[0]}:{member[1]}")
             seen.add(member)
@@ -644,11 +650,11 @@ class Orchestrateur:
         # Une erreur (429, SQL invalide, refus) reste dans n mais ne vote pas.
         ballots: dict = {}                      # valeur -> liste des modèles qui la proposent
         for proposal in traces_question:
-            value = proposal.get("value")
-            if proposal.get("verdict") != "executed" or value is None or value == "":
+            value = field(proposal, "value")
+            if field(proposal, "verdict") != "executed" or value is None or value == "":
                 continue
             ballots.setdefault(int(value), []).append(
-                f"{proposal['provider']}:{proposal['model_requested']}")
+                f"{field(proposal, 'provider')}:{field(proposal, 'model_requested')}")
 
         if not ballots:                         # personne n'a voté : abstention
             return {"consensus": False, "value": None, "votes": 0, "models": []}
