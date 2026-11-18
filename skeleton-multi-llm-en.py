@@ -624,7 +624,42 @@ class Orchestrateur:
         families, and look in your traces for a case where several models agree
         on a wrong value.
         """
-        raise NotImplementedError("vote_k_sur_n: to implement in TD 2 (see the procedure in the docstring).")
+
+        n = len(traces_question)
+
+        # Règle 2 : k strictement majoritaire, fixé AVANT de regarder les réponses.
+        # Garantit que deux valeurs différentes ne peuvent pas atteindre k en même temps.
+        if not (n // 2 < k <= n):
+            raise ValueError(f"k={k} is not a strict majority for n={n} (need {n // 2} < k <= {n})")
+
+        # Règle 3 : un modèle = une voix. Un doublon (même provider + même modèle) est refusé.
+        seen = set()
+        for proposal in traces_question:
+            member = (proposal["provider"], proposal["model_requested"])
+            if member in seen:
+                raise ValueError(f"duplicate panel member: {member[0]}:{member[1]}")
+            seen.add(member)
+
+        # Règle 1 : seules les propositions exécutées ET porteuses d'une valeur votent.
+        # Une erreur (429, SQL invalide, refus) reste dans n mais ne vote pas.
+        ballots: dict = {}                      # valeur -> liste des modèles qui la proposent
+        for proposal in traces_question:
+            value = proposal.get("value")
+            if proposal.get("verdict") != "executed" or value is None or value == "":
+                continue
+            ballots.setdefault(int(value), []).append(
+                f"{proposal['provider']}:{proposal['model_requested']}")
+
+        if not ballots:                         # personne n'a voté : abstention
+            return {"consensus": False, "value": None, "votes": 0, "models": []}
+
+        value, models = max(ballots.items(), key=lambda item: len(item[1]))
+        # Règle 4 : une valeur atteint k -> consensus.
+        if len(models) >= k:
+            return {"consensus": True, "value": value, "votes": len(models), "models": models}
+        # Règle 5 : sinon abstention, on n'invente jamais de valeur.
+        return {"consensus": False, "value": None, "votes": len(models), "models": []}
+       #raise NotImplementedError("vote_k_sur_n: to implement in TD 2 (see the procedure in the docstring).")
 
 
 # ==========================================================================
