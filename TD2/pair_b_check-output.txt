@@ -1,0 +1,55 @@
+
+## 0. Database fingerprint
+[OK] boutique.sqlite sha256 0077e235...3398fec2 (manifest 0077e235...3398fec2)
+
+## 1. Shared wrong values in TD1/traces/traces-td1.csv
+106 rows, natures: ['real']
+shared wrong value: C02 value=0 models=['groq:openai/gpt-oss-20b', 'openrouter:dots-studio/dots-3-note-preview:free']
+  table row 3: groq:openai/gpt-oss-120b:C02 value=590320 reference=590320 verdict=correct attempts=1 http=200 prompt_sha256=42b91ea47ed6...
+  table row 23: groq:openai/gpt-oss-20b:C02 value=0 reference=590320 verdict=incorrect attempts=1 http=200 prompt_sha256=42b91ea47ed6...
+  table row 45: openrouter:cohere/north-mini-code:free:C02 value=2606320 reference=590320 verdict=incorrect attempts=1 http=200 prompt_sha256=42b91ea47ed6...
+  table row 65: groq:qwen/qwen3.8-27b:C02 value=590320 reference=590320 verdict=correct attempts=1 http=200 prompt_sha256=42b91ea47ed6...
+  table row 92: openrouter:dots-studio/dots-3-note-preview:free:C02 value=0 reference=590320 verdict=incorrect attempts=1 http=200 prompt_sha256=42b91ea47ed6...
+
+## 2. Votes on C02 with the group's vote_k_sur_n
+fixed panel 2 of 3: [('openai/gpt-oss-120b', 590320), ('cohere/north-mini-code:free', 2606320), ('qwen/qwen3.8-27b', 590320)]
+  -> {"consensus": true, "value": 590320, "votes": 2, "models": ["groq:openai/gpt-oss-120b", "groq:qwen/qwen3.8-27b"]}
+five TD 1 models 3 of 5: [('openai/gpt-oss-120b', 590320), ('openai/gpt-oss-20b', 0), ('cohere/north-mini-code:free', 2606320), ('qwen/qwen3.8-27b', 590320), ('dots-studio/dots-3-note-preview:free', 0)]
+  -> {"consensus": false, "value": null, "votes": 2, "models": []}
+
+## 3. SQL files of TD2/sql on data/boutique.sqlite (read-only)
+c02-reference.sql                  -> 590320
+c02-faulty-gpt-oss-20b.sql         -> 0
+c02-faulty-dots.sql                -> 0
+c02-dots-birth-clause-only.sql     -> 135000
+c02-dots-date-clause-only.sql      -> 0
+c02-delta.sql: customer_id | birth_date | reference_cents | gpt_oss_20b_cents | dots_cents
+   C005 | 2000-09-26 | 150240 | 0 | 0
+   C007 | 2000-11-30 | 118740 | 0 | 0
+   C009 | 2001-03-10 | 61330 | 0 | 0
+   C008 | 2001-05-15 | 99090 | 0 | 0
+   C002 | 2001-09-24 | 25920 | 0 | 0
+   C001 | 2001-09-25 | 135000 | 0 | 0
+c02-delta-total.sql: customers | reference_cents | gpt_oss_20b_cents | dots_cents | gap_gpt_oss_20b | gap_dots
+   6 | 590320 | 0 | 0 | 590320 | 590320
+c02-population-check.sql: filter | customers | order_lines
+   C02 reference | 6 | 82
+   C02 GPT-OSS 20B | 0 | 0
+   C02 Dots | 0 | 0
+   C06 reference (true zero) | 0 | 0
+   C14 reference (true zero) | 0 | 0
+birth_date range: ('1958-06-08', '2006-08-15')
+order date range: ('2026-01-06 21:23:30', '2026-09-20 19:24:25')
+
+## 4. Independent recomputation on the CSV files (completed age in Python, no SQL)
+   C005 | 2000-09-26 | 150240
+   C007 | 2000-11-30 | 118740
+   C009 | 2001-03-10 | 61330
+   C008 | 2001-05-15 | 99090
+   C002 | 2001-09-24 | 25920
+   C001 | 2001-09-25 | 135000
+customers=6 order_lines=82 total=590320
+
+## 5. DEMO-VOTE toy table (synthetic teaching material, not shop data)
+proposals: [0, 0, 100] reference: 100
+  2 of 3 -> {"consensus": true, "value": 0, "votes": 2, "models": ["groq:openai/gpt-oss-120b", "openrouter:cohere/north-mini-code:free"]}
