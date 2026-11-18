@@ -128,7 +128,7 @@ The first SQL query keeps the reference date without subtracting 25 years and se
 
 **Check that detects it:** count the population selected by the filter. A zero amount with a non-empty reference population is escalated to the reference computation; true zeros (C06, C14) pass. Agreement on 0 deserves less trust than agreement on another amount.
 
-[Full diagnosis, queries and reproduction](wrong-consensus.md) · `python TD2/pair_b_check.py` ([output](pair_b_check-output.txt))
+[Pair B summary](TD2_groupB.md) · [Detailed evidence](wrong-consensus.md) · `python TD2/pair_b_check.py` ([output](pair_b_check-output.txt))
 
 
 # TD 2. Routing rule (Pair C)

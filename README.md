@@ -2,20 +2,20 @@
 
 ESILV, *Trustworthy Generative AI* module (Next Generation AI), Data & AI major, year 4.
 Repository of sub-group **DIA1-G2**, used from TD 1 to TD 3.
-Course pack: `2026-10-18-students-1` (kit of 14 October 2026).
+Course packs: `2026-10-18-students-1` (TD 1) and `2026-11-18-students-5` (TD 2).
 
 ## Members
 
-| Member | Role in TD 1 |
-|---|---|
-| Oryssa Stella TALATALA | A — GPT-OSS 120B (Groq) |
-| Jolan NALLET--PANG | B — GPT-OSS 20B (Groq); trace consolidation; TD 1 analysis |
-| Cecilia Sessi DOSSA | C — Cohere North Mini Code (OpenRouter) |
-| Tony THEBAUD-PERRIER | D — Qwen3.8-27B (Groq) |
-| Hugo HOUPPE | E — Dots3-Note Preview (OpenRouter); TD 1 analysis |
-| Pierre-Olivier WAFO BAKAM | F — reference cross-checks, consolidation, repository |
+| Member | Role in TD 1 | Pair in TD 2 |
+|---|---|---|
+| Oryssa Stella TALATALA | A — GPT-OSS 120B (Groq) | B — wrong consensus |
+| Jolan NALLET--PANG | B — GPT-OSS 20B (Groq); trace consolidation; TD 1 analysis | A — k-of-n vote |
+| Cecilia Sessi DOSSA | C — Cohere North Mini Code (OpenRouter) | C — routing rule |
+| Tony THEBAUD-PERRIER | D — Qwen3.8-27B (Groq) | A — k-of-n vote |
+| Hugo HOUPPE | E — Dots3-Note Preview (OpenRouter); TD 1 analysis | B — wrong consensus |
+| Pierre-Olivier WAFO BAKAM | F — reference cross-checks, consolidation, repository | B — wrong consensus |
 
-Protocol roles: A to E each operate one model (20 calls); the other members cross-check the references and consolidate the traces. Each session report (`reports/`) details individual contributions.
+TD 1 roles: A to E each operate one model (20 calls); the other members cross-check the references and consolidate the traces. TD 2 groups: A implements the vote and compares 2-of-3 with 3-of-5, B analyses the wrong consensus, C writes the routing rule and adapts the simulator. Each session report (`reports/`) details individual contributions.
 
 ## Repository layout
 
@@ -30,6 +30,7 @@ Protocol roles: A to E each operate one model (20 calls); the other members cros
 ├── check_references.py         references C01-C20: SQL execution + independent computation on the CSV files
 ├── atelier-vote.py             TD 2 workshop
 ├── atelier-routage.py          TD 2 workshop
+├── vote-quorum.py              TD 2: 2-of-3 panel vs 3-of-5 quorum on the twenty questions
 ├── modeles-autorises.json      configuration: models, parameters, limits (read by the code)
 ├── schema.sql                  schema sent to the models
 ├── questions-td1.json          the twenty questions
@@ -37,12 +38,18 @@ Protocol roles: A to E each operate one model (20 calls); the other members cros
 ├── data/                       boutique.sqlite database and CSV files (never modify)
 ├── docs/                       kit assignments, protocol, guides and materials
 ├── reports/
-│   └── td1.md                  TD 1 session report
-└── TD1/
-    ├── reference-td1.csv       20 reference queries, values and checker
-    ├── prompts-en.md           system message and user template, as used
-    ├── traces/                 raw traces: state-A..E.jsonl, traces-A..E.csv, merged traces-td1.*
-    └── results/                model/question comparison, five-model summary, pivot view
+│   ├── td1.md                  TD 1 session report
+│   └── td2.md                  TD 2 session report
+├── TD1/
+│   ├── reference-td1.csv       20 reference queries, values and checker
+│   ├── prompts-en.md           system message and user template, as used
+│   ├── traces/                 raw traces: state-A..E.jsonl, traces-A..E.csv, merged traces-td1.*
+│   └── results/                model/question comparison, five-model summary, pivot view
+└── TD2/
+    ├── vote-td2.jsonl, vote-2of3-vs-3of5.jsonl   Pair A: vote decisions on the twenty questions
+    ├── TD2_groupB.md             Pair B: summary of the wrong consensus C02
+    ├── wrong-consensus.md, pair_b_check.py, sql/ Pair B: detailed evidence and checks
+    └── atelier-routage-paire-C.py, simu-*.txt    Pair C: adapted simulator and its outputs
 ```
 
 Code, configuration and `data/` stay at the root: the kit scripts look for them next to themselves.
@@ -92,6 +99,23 @@ python skeleton-multi-llm-en.py --rates --state replay-check.jsonl
 Expected result of step 4: GPT-OSS 120B 20/20, GPT-OSS 20B 19/20, Qwen3.8-27B 14/20, Cohere North Mini Code 13/20, Dots3-Note 12/20.
 Replayed rows carry `nature = replay`; the `replay-check.*` files are excluded from the repository by `.gitignore`.
 
+## Replay the TD 2 work (no API key, no network)
+
+TD 2 uses only the stored TD 1 traces. From the root of a fresh clone:
+
+```bash
+# Pair A: the vote on four synthetic examples, then 2-of-3 vs 3-of-5 on the twenty questions
+python atelier-vote.py
+python vote-quorum.py --traces TD1/traces/traces-td1.csv
+
+# Pair B: wrong consensus C02 (search, votes, SQL, delta, CSV recomputation)
+python TD2/pair_b_check.py
+
+# Pair C: routing simulator before and after adaptation
+python atelier-routage.py
+python TD2/atelier-routage-paire-C.py
+```
+
 ## Run real calls again (optional)
 
 Requires Groq (Free plan) and OpenRouter (`:free` models only) accounts. Keys stay in environment variables, never in a repository file.
@@ -109,7 +133,7 @@ Use new `--state` and `--out` files: the traces in `TD1/traces/` must not be mod
 | TD | Date | Status | Report |
 |---|---|---|---|
 | TD 1 — compare | 2026-10-21 | 100 cells run (106 calls); Qwen C18 and C20 not executed after two HTTP 429 | [reports/td1.md](reports/td1.md) |
-| TD 2 — vote and route | 2026-11-18 | upcoming | |
+| TD 2 — vote and route | 2026-11-18 | vote on the twenty questions (2-of-3 vs 3-of-5), wrong consensus C02 analysed in SQL, routing rule and adapted simulator | [reports/td2.md](reports/td2.md) |
 | TD 3 — quantify and decide | 2026-12-11 | upcoming | |
 
 ## Security

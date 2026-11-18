@@ -1,5 +1,7 @@
 # Step 2: the wrong consensus (Pair B)
 
+> Detailed evidence for Part 2 of TD 2. Short version of this part, in the same format as Pairs A and C: [TD2_groupB.md](TD2_groupB.md).
+
 **Nature: real batch.** The case comes from our own TD 1 traces (`nature = real`) and is verified on `data/boutique.sqlite`. It is not a replayed or synthetic example. Every figure below is reproduced by [pair_b_check.py](pair_b_check.py), offline and read-only; its full output is in [pair_b_check-output.txt](pair_b_check-output.txt).
 
 ## Search over the 100 TD 1 cells
@@ -142,8 +144,10 @@ Proposals `[0, 0, 100]`, 2 of 3: `vote_k_sur_n` returns a consensus on 0 against
 
 ## Pair B contributions
 
-- **Pierre-Olivier WAFO BAKAM:** search over the 100 cells, quorum verdicts, faulty-clause diagnosis, delta and population-check queries, DEMO-VOTE, `pair_b_check.py`.
-- **Hugo HOUPPE:** an independent version of the same analysis (commit 7d08116), with its own queries and script, which reproduced every figure above (0, 590 320, 6 customers, 135 000). Merged here: the order-line count per customer, the "correct age, order-day filter" check on the Dots query, and the summary of this case in the TD 2 report.
+Pair B: Pierre-Olivier WAFO BAKAM, Oryssa Stella TALATALA and Hugo HOUPPE.
+
+- **Pierre-Olivier WAFO BAKAM and Oryssa Stella TALATALA** worked together on the same tasks: search over the 100 cells, hand count and quorum verdicts, faulty-clause diagnosis, delta and population-check queries, DEMO-VOTE, `pair_b_check.py` and this write-up.
+- **Hugo HOUPPE** built a separate version of the same analysis (commit 7d08116), with his own queries and script, which reproduced every figure above independently (0, 590 320, 6 customers, 135 000). Merged here: the order-line count per customer, the "correct age, order-day filter" check on the Dots query, and the summary of this case in the TD 2 report.
 
 ## Limits and disclosure
 
