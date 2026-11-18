@@ -3,7 +3,6 @@
 ## Sources
 - TD 1 results: [pivot view](../TD1/results/pivot-view.md), [comparison](../TD1/results/model-question-comparison-en.csv), [summary](../TD1/results/five-model-summary-en.csv)
 
-
 ## Price order used
 All tested routes were free. Ties are broken by the documented paid price of the same model.
 Cohere :free and Dots :free (OpenRouter, no paid route) < GPT-OSS 20B (0.075 / 0.30) < GPT-OSS 120B (0.15 / 0.60) < Qwen (0.80 / 4.00), in USD per million input / output tokens.
