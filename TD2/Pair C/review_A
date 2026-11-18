@@ -1,0 +1,23 @@
+# Code review of Pair A, by Pair C
+
+Reviewers: Pair C · Internal cross-review,
+Files read: TD2/Pair A/vote-quorum.py, TD2/Pair A/TD2_groupe_A.md
+
+## What we checked
+- vote-quorum.py reuses vote_k_sur_n from the supplied skeleton instead of rewriting it.
+- Both thresholds respect a strict majority, 2 of 3 and 3 of 5.
+- Only 'real' rows are used, and a member in error (HTTP 429, invalid or rejected SQL) stays in the panel without voting.
+- The reference is read only after the decision, so the vote cannot be steered by the expected value.
+
+## Link with the Pair C routing rule
+- C15, C17 and C19 are combination questions. The 2-of-3 panel abstains on all three, because only GPT-OSS 120B is correct there and Cohere and Qwen disagree with each other. This supports our choice not to rely on that panel for combinations. Our rule uses GPT-OSS 20B and 120B, both 5/5 on this family in TD 1, plus a reference check when the figure is shown to a customer.
+- C02 moves from consensus (2 of 3) to abstention (3 of 5). Adding two models that are wrong on this question costs the consensus. A larger panel is not automatically safer, it depends on which models it adds. This matches our F2 rule, where GPT-OSS 20B (3/4) is not called alone.
+- On C15 and C17, the two agreeing votes in the 3-of-5 quorum both come from the GPT-OSS family. A quorum built on one family limits the protection against shared errors.
+
+## Points raised
+- "Last attempt" is the last row read for each model. This is correct only if traces-td1.csv is in chronological order. To confirm on C18 and C19 of GPT-OSS 20B, which have an HTTP 429 before a success.
+
+
+## Questions for Pair A
+- Why does a model that did not answer stay in n instead of being removed from the panel?
+- Would the conclusions change with a 2-of-3 panel made of GPT-OSS 120B, GPT-OSS 20B and Qwen, the three models with 100 % on the age at the order?

@@ -1,0 +1,25 @@
+# Code review of Pair B, by Pair C
+
+Reviewers: Pair C · Internal cross-review
+Files read: TD2/wrong-consensus.md, TD2/pair_b_check.py and its output
+
+## What we checked
+- The C02 reference is confirmed three ways: SQL reference query, delta query by customer, and a recomputation on the CSV files in Python without SQL. All three give 6 customers, 82 order lines and 590320 cents.
+- The age window ]2000-09-25 ; 2001-09-25] matches the one we used for C15 in TD 1.
+- The vote results match Pair A: consensus on 590320 with the fixed 2-of-3 panel, abstention with the 3-of-5 quorum (590320 and 0 both get 2 votes).
+- The database fingerprint is checked before any query, and the database is opened read-only.
+
+## Link with the Pair C routing rule
+- C02 belongs to family F2. GPT-OSS 20B returns 0 there, which is why our rule does not call it alone on F2.
+- We adopt the population check for F2 when the figure is shown to a customer. A quorum alone would not catch a shared empty filter.
+- Pair B notes that a 2-of-3 panel of GPT-OSS 20B, Cohere and Dots would elect 0. This supports choosing panel members from the models that were correct on the family, not only from distinct providers.
+
+## Points raised
+- The search for shared wrong values (section 1) reads every row, including retries, while the rule says "last attempt". This has no effect on C02 (one attempt per model), but filtering on the last attempt would match the stated rule.
+- The "last attempt" in the 3-of-5 vote is the last row read, so it relies on the row order of traces-td1.csv, as in Pair A.
+- ROOT = parents[1] assumes the script stays in TD2/. If it is moved to a pair folder, it will break as vote-quorum.py did.
+- In DEMO-VOTE, the synthetic values are labelled with real model names (gpt-oss-120b, Cohere). Neutral labels would avoid confusion with real results.
+
+## Questions for Pair B
+- Is the population check applied only when the amount is 0, or also when the population differs from the reference for a non-zero amount?
+- Would the population check have caught Cohere's wrong value on C02 (2606320)?
