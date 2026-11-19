@@ -665,7 +665,6 @@ class Orchestrateur:
             return {"consensus": True, "value": value, "votes": len(models), "models": models}
         # Règle 5 : sinon abstention, on n'invente jamais de valeur.
         return {"consensus": False, "value": None, "votes": len(models), "models": []}
-       #raise NotImplementedError("vote_k_sur_n: to implement in TD 2 (see the procedure in the docstring).")
 
 
 # ==========================================================================

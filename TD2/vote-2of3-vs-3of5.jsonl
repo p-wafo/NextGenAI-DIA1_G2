@@ -1,4 +1,4 @@
-﻿{"case": "C01", "reference": 792800, "2of3": {"consensus": true, "value": 792800, "votes": 3, "matches_reference": true}, "3of5": {"consensus": true, "value": 792800, "votes": 5, "matches_reference": true}}
+{"case": "C01", "reference": 792800, "2of3": {"consensus": true, "value": 792800, "votes": 3, "matches_reference": true}, "3of5": {"consensus": true, "value": 792800, "votes": 5, "matches_reference": true}}
 {"case": "C02", "reference": 590320, "2of3": {"consensus": true, "value": 590320, "votes": 2, "matches_reference": true}, "3of5": {"consensus": false, "value": null, "votes": 2, "matches_reference": null}}
 {"case": "C03", "reference": 936350, "2of3": {"consensus": true, "value": 936350, "votes": 3, "matches_reference": true}, "3of5": {"consensus": true, "value": 936350, "votes": 5, "matches_reference": true}}
 {"case": "C04", "reference": 2826250, "2of3": {"consensus": true, "value": 2826250, "votes": 3, "matches_reference": true}, "3of5": {"consensus": true, "value": 2826250, "votes": 5, "matches_reference": true}}
